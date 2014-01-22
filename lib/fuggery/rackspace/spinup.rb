@@ -13,12 +13,12 @@ module Fuggery
                                       :rackspace_username   => user,
                                       :rackspace_api_key    => key,
                                       :version              => :v2,
-                                      :rackspace_region     => :lon
+                                      :rackspace_region     => :lon,
                                       :rackspace_auth_url   => Fog::Rackspace::UK_AUTH_ENDPOINT,
                                     })
       end
 
-      def find_or_create server_name, metadata
+      def find_or_create server_name, metadata={}
         # Spin up a box if it doesn't exist. Return IP
         # We assume that we're not going to be doing anything massively shiny
         flavor = @compute.flavors.find {|f| f.name == '1GB Standard Instance' }.id
@@ -29,13 +29,14 @@ module Fuggery
                                     :name      => server_name,
                                     :flavor_id => flavor,
                                     :image_id  => image,
-                                    :metadata  => metatdata
+                                    :metadata  => metadata
                                   })
+          srv.wait_for(600,5) do
+            ready?
+          end
         end
-        srv.wait_for(600,5) do
-          ready?
-        end
-        srv.addresses["public"].find{|a| a['version'] == 4}['addr']
+
+        return srv.addresses["public"].find{|a| a['version'] == 4}['addr'], srv.username, srv.password
       end
     end
   end
