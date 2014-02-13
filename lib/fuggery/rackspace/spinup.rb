@@ -48,7 +48,7 @@ module Fuggery
         ip = srv.addresses["public"].find{|a| a['version'] == 4}['addr']
 
         @uat_dns.a server_name, ip
-        %w(web bilcas db redis alpaca codas).each do |subdomain|
+        %w(web bilcas db redis alpaca codas www api).each do |subdomain|
           @uat_dns.cname "#{subdomain}.#{server_name}", server_name
         end
 
