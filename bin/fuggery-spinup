@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+#
+
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), "..", "lib")
+
+require 'fuggery/rackspace/spinup'
+require 'optparse'
+
+user   = ENV['RACKSPACE_USER']
+key    = ENV['RACKSPACE_KEY']
+domain = 'fcuat.co.uk'
+hostn  = nil
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{$0} [options]"
+  opts.on("-u", "--user USERNAME", "rackspace username")            { |u| user  = u.to_s }
+  opts.on("-k", "--key KEY", "rackspace API key")                   { |k| key   = k.to_s }
+  opts.on("-d", "--domain DOMAIN", "domain to add to")              { |d| count = d.to_s }
+  opts.on("-h", "--hostname HOSTNAME", "hostname to create")        { |h| hostn = h.to_s }
+end.parse!
+
+unless hostn
+  raise ArgumentError, "You must specify a hostname"
+end
+
+unless hostn =~ /#{domain}$/
+  hostn = "#{hostn}.#{domain}"
+  puts "Changing hostname to the fqdn #{hostn}"
+end
+
+s = Fuggery::Rackspace::Spinup.new user, key, domain
+
+if s.exists? hostn
+  puts "Host exists"
+  exit
+end
+
+puts s.create hostn
