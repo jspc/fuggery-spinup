@@ -14,8 +14,13 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     "README.md" ,
-    "lib/fuggery/rackspace/spinup.rb"
-   ]
-   s.add_dependency( 'fog', '=1.19.0' )
-   s.add_dependency( 'unf',  '=0.1.3' )
+    "lib/fuggery/rackspace/spinup.rb",
+    "lib/fuggery/rackspace/dns.rb",
+    "bin/fuggery-spinup"
+  ]
+  s.executables = [
+    "fuggery-spinup"
+  ]
+  s.add_dependency( 'fog', '=1.19.0' )
+  s.add_dependency( 'unf',  '=0.1.3' )
 end
