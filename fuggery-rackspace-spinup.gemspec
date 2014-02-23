@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
     "README.md" ,
     "lib/fuggery/rackspace/spinup.rb",
     "lib/fuggery/rackspace/dns.rb",
+    "lib/fuggery/rackspace/servers.rb",
     "bin/fuggery-spinup"
   ]
   s.executables = [

@@ -10,6 +10,7 @@ user   = ENV['RACKSPACE_USER']
 key    = ENV['RACKSPACE_KEY']
 domain = 'fcuat.co.uk'
 hostn  = nil
+remove = false
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
@@ -17,6 +18,7 @@ OptionParser.new do |opts|
   opts.on("-k", "--key KEY", "rackspace API key")                   { |k| key   = k.to_s }
   opts.on("-d", "--domain DOMAIN", "domain to add to")              { |d| count = d.to_s }
   opts.on("-h", "--hostname HOSTNAME", "hostname to create")        { |h| hostn = h.to_s }
+  opts.on("-r", "--remove", "remove this host")                     { remove = true }
 end.parse!
 
 unless hostn
@@ -30,9 +32,12 @@ end
 
 s = Fuggery::Rackspace::Spinup.new user, key, domain
 
-if s.exists? hostn
-  puts "Host exists"
-  exit
+if remove
+  puts s.remove hostn
+else
+  if s.exists? hostn
+    puts "Host exists"
+    exit
+  end
+  puts s.create hostn
 end
-
-puts s.create hostn
