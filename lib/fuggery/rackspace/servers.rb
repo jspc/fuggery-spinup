@@ -22,6 +22,10 @@ module Fuggery
       def server name
         @compute.servers.find {|s| s.name =~ /#{name}/}
       end
+
+      def remove name
+        server(name).destroy
+      end
     end
   end
 end

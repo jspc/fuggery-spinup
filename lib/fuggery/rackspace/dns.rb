@@ -39,8 +39,8 @@ module Fuggery
         @dns.zones.find{|z| z.domain == zone}.records.select{|r| r.name =~ /#{name}/ }.map { |r| "#{r.name}. IN #{r.type} #{r.value}" }
       end
 
-      def remove_all name, zone
-        @dns.zones.find{|z| z.domain == zone}.records.select{|r| r.name =~ /#{name}/ }.each { |r| r.destroy }
+      def remove_all fqdn, zone
+        @dns.zones.find{|z| z.domain == zone}.records.select{|r| r.name =~ /#{fqdn}/ }.each { |r| r.destroy }
         true
       end
 
