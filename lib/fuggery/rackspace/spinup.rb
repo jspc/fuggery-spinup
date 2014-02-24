@@ -37,7 +37,7 @@ module Fuggery
         STDERR.puts("#{Time.now}: #{msg}") if @verbose
       end
 
-      def create server_name, zone, metadata={}
+      def create server_name, zone, subdomains=[]
         # Spin up a box if it doesn't exist. Return password
         # We assume that we're not going to be doing anything massively shiny
         flavor = @compute.flavors.find {|f| f.name == '2 GB Performance' }.id
@@ -60,16 +60,16 @@ module Fuggery
         end
 
         # This fails in the above block
+        ip = srv.ipv4_address
         log "Waiting for rackconnect to work on #{server_name}"
-        until rackconnect? server_name
+        until rackconnect? server_name and ip != srv.ip4_address
           sleep 10
+          srv.reload
         end
-
-        srv.reload
         ip = srv.ipv4_address
 
         @dns.a server_name, zone, ip
-        %w(web bilcas db redis alpaca codas www api).each do |subdomain|
+        subdomains.each do |subdomain|
           log "Creating #{subdomain}.#{server_name} DNS entry"
           @dns.cname "#{subdomain}.#{server_name}", zone, server_name
         end
