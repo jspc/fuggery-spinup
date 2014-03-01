@@ -33,7 +33,7 @@ module Fuggery
 
         ip = srv.ipv4_address
         log "Waiting for rackconnect to work on #{server_name}"
-        until @compute.rackconnect? server_name and ip != srv.ip4_address
+        until @compute.rackconnect? server_name and ip != srv.ipv4_address
           sleep 10
           srv.reload
         end
