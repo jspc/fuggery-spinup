@@ -1,13 +1,13 @@
 Gem::Specification.new do |s|
   s.name = "fuggery-rackspace-spinup"
-  s.version = "1.1.0"
+  s.version = "1.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jspc"]
-  s.date = "2014-02-24"
+  s.date = "2014-03-01"
   s.description = "Find and Build rackspace servers"
   s.summary = "Rackspace API tools"
-  s.email = "jame.condron@fundingcircle.com"
+  s.email = "james.condron@fundingcircle.com"
   s.homepage = "https://fundingcircle.com"
   s.extra_rdoc_files = [
     "README.md"
