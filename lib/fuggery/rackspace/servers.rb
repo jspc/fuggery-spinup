@@ -22,8 +22,31 @@ module Fuggery
       def server name
         @compute.servers.find {|s| s.name =~ /#{name}/}
       end
+      alias_method :exists?, :server
 
-      def remove name
+      def rackconnect? name
+        s = server(name)
+        unless s.metadata.find {|m| m.key == 'rackconnect_automation_feature_provison_public_ip'}
+          return false
+        end
+        s.metadata.find {|m| m.key == 'rackconnect_automation_feature_provison_public_ip'}.value == 'ENABLED'
+      end
+
+      def create server_name, flavor_name, image_name
+        return nil if exists? server_name
+
+        flavor = @compute.flavors.find {|f| f.name =~ /#{flavor_name}/ }.id
+        image  = @compute.images.find  {|i| i.name =~ /#{image_name}/  }.id
+        @compute.servers.create({
+                                  :name      => server_name,
+                                  :flavor_id => flavor,
+                                  :image_id  => image,
+                                  :metadata  => {}
+                                })
+      end
+
+      def remove server_name
+        return nil unless exists? server_name
         server(name).destroy
       end
     end
