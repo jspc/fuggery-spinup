@@ -47,7 +47,7 @@ module Fuggery
 
       def remove server_name
         return nil unless exists? server_name
-        server(name).destroy
+        server(server_name).destroy
       end
     end
   end
