@@ -3,6 +3,7 @@
 # Spinup a box, do something cool
 
 require 'fog'
+require 'fuggery/rackspace/servers'
 require 'fuggery/rackspace/dns'
 
 module Fuggery
