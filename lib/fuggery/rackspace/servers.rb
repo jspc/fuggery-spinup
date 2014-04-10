@@ -32,7 +32,7 @@ module Fuggery
         s.metadata.find {|m| m.key == 'rackconnect_automation_feature_provison_public_ip'}.value == 'ENABLED'
       end
 
-      def create server_name, flavor_name, image_name
+      def create server_name, flavor_name, image_name, key_name=nil
         return nil if exists? server_name
 
         flavor = @compute.flavors.find {|f| f.name =~ /#{flavor_name}/ }.id
@@ -41,7 +41,8 @@ module Fuggery
                                   :name      => server_name,
                                   :flavor_id => flavor,
                                   :image_id  => image,
-                                  :metadata  => {}
+                                  :metadata  => {},
+                                  :key_name  => key_name,
                                 })
       end
 
