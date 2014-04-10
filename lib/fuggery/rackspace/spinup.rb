@@ -19,12 +19,12 @@ module Fuggery
         STDERR.puts("#{Time.now}: #{msg}") if @verbose
       end
 
-      def create server_name, flavor, image, zone, subdomains=[]
+      def create server_name, flavor, image, zone, subdomains=[], keyname=nil
         if @compute.exists? server_name
           log "Host #{server_name} already exists"
           return nil
         end
-        srv = @compute.create server_name, flavor, image
+        srv = @compute.create server_name, flavor, image, keyname
 
         log "Creating #{server_name}"
         srv.wait_for(300,5) do
