@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name = "fuggery-rackspace-spinup"
-  s.version = "2.0.1"
+  s.version = "2.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jspc"]
-  s.date = "2014-03-01"
+  s.date = "2014-04-28"
   s.description = "Find and Build rackspace servers"
   s.summary = "Rackspace API tools"
   s.email = "james.condron@fundingcircle.com"

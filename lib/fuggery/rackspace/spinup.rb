@@ -19,30 +19,32 @@ module Fuggery
         STDERR.puts("#{Time.now}: #{msg}") if @verbose
       end
 
-      def create server_name, flavor, image, zone, subdomains=[], keyname=nil
-        if @compute.exists? server_name
-          log "Host #{server_name} already exists"
+      def create server_name, flavor, image, zone, email, subdomains=[], keyname=nil
+        fqdn = @dns.normalize_hostname server_name, zone
+        if @compute.exists? fqdn
+          log "Host #{fqdn} already exists"
           return nil
         end
-        srv = @compute.create server_name, flavor, image, keyname
+        srv = @compute.create fqdn, flavor, image, keyname
 
-        log "Creating #{server_name}"
+        log "Creating #{fqdn}"
         srv.wait_for(300,5) do
           ready?
         end
 
         ip = srv.ipv4_address
-        log "Waiting for rackconnect to work on #{server_name}"
-        until @compute.rackconnect? server_name and ip != srv.ipv4_address
+        log "Waiting for rackconnect to work on #{fqdn}"
+        until @compute.rackconnect? fqdn and ip != srv.ipv4_address
           sleep 10
           srv.reload
         end
         ip = srv.ipv4_address
 
-        @dns.a server_name, zone, ip
+        @dns.create_zone zone, email
+        @dns.a fqdn, zone, ip
         subdomains.each do |subdomain|
-          log "Creating #{subdomain}.#{server_name} DNS entry"
-          @dns.cname "#{subdomain}.#{server_name}", zone, server_name
+          log "Creating #{subdomain}.#{fqdn} DNS entry"
+          @dns.cname "#{subdomain}.#{fqdn}", zone, fqdn
         end
 
         return srv.password

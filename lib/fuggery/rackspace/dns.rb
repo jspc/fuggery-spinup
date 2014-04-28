@@ -17,30 +17,47 @@ module Fuggery
                                     })
       end
 
-      def create type, name, zone, ip
-        zone = @dns.zones.find{|z| z.domain == zone}
+      def get_zone zone
+        @dns.zones.find{|z| z.domain == zone}
+      end
+
+      def create_zone zone, email
+        return true if get_zone(zone)
+        @dns.zones.create({
+                            :domain  => zone,
+                            :email   => email,
+                          })
+      end
+
+      def create_record type, name, zone, ip
+        zone = get_zone(zone)
         zone.records.create({
-                              :name  => name,
+                              :name  => normalize_hostname(name,zone),
                               :value => ip,
                               :type  => type,
                               :ttl   => 300
                             })
       end
 
+      def normalize_hostname name, zone
+        name = "#{name}.#{zone}" unless name =~ /#{zone}^/
+        name
+      end
+
       def a name, zone, ip
-        create 'A', name, zone, ip
+        create_record 'A', name, zone, ip
       end
 
       def cname name, zone, dst
-        create 'CNAME', name, zone, dst
+        create_record 'CNAME', name, zone, dst
       end
 
       def view name, zone
-        @dns.zones.find{|z| z.domain == zone}.records.select{|r| r.name =~ /#{name}/ }.map { |r| "#{r.name}. IN #{r.type} #{r.value}" }
+        get_zone(zone).records.select{|r| r.name =~ /#{name}/ }.map { |r| "#{r.name}. IN #{r.type} #{r.value}" }
       end
 
       def remove_all fqdn, zone
-        @dns.zones.find{|z| z.domain == zone}.records.select{|r| r.name =~ /#{fqdn}/ }.each { |r| r.destroy }
+        get_zone(zone).records.select{|r| r.name =~ /#{fqdn}/ }.each { |r| r.destroy }
         true
       end
 
@@ -48,7 +65,6 @@ module Fuggery
         @dns.zones.map{|z| z.domain}
       end
 
-      private :create
     end
   end
 end
