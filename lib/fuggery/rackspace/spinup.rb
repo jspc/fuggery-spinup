@@ -19,13 +19,18 @@ module Fuggery
         STDERR.puts("#{Time.now}: #{msg}") if @verbose
       end
 
-      def create server_name, flavor, image, zone, email, subdomains=[], keyname=nil
+      def create server_name, flavor, image, zone, email, subdomains=[], key_path=nil
         fqdn = @dns.normalize_hostname server_name, zone
         if @compute.exists? fqdn
           log "Host #{fqdn} already exists"
           return nil
         end
-        srv = @compute.create fqdn, flavor, image, keyname
+
+        if key_path.nil?
+          key_path = File.join( ENV['HOME'], '.ssh', 'id_rsa' )
+        end
+
+        srv = @compute.create fqdn, flavor, image, key_path
 
         log "Creating #{fqdn}"
         srv.wait_for(300,5) do
